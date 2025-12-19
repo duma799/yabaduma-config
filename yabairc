@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# load scripting addition
+sudo yabai --load-sa
+
+# layout
+yabai -m config layout bsp
+
+# window modifications
+yabai -m config window_placement second_child
