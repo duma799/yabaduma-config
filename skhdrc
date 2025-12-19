@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
 
-# ============================================
+# Application Launches
+
+# Terminal
+alt - return : open -na /System/Applications/Utilities/Terminal.app
+
 # Window Management
-# ============================================
 
 # Navigation - focus window
 alt - left : yabai -m window --focus west
@@ -40,6 +43,9 @@ shift + alt - space : yabai -m window --toggle float; \
 
 # Make window fullscreen
 alt - f : yabai -m window --toggle zoom-fullscreen
+
+# Toggle split orientation
+alt - o : yabai -m window --toggle split
 
 # Rotate windows clockwise and anticlockwise
 ctrl + alt - r : yabai -m space --rotate 270
