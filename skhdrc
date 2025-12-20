@@ -47,8 +47,7 @@ ctrl + alt - right : yabai -m window --resize right:50:0; \
                      yabai -m window --resize left:50:0
 
 # Float / Unfloat window
-shift + alt - f : yabai -m window --toggle float; \
-                  yabai -m window --grid 4:4:1:1:2:2
+ctrl - z : yabai -m window --toggle float && yabai -m window --grid 4:4:1:1:2:2
 
 # Make window fullscreen
 shift + alt - m : yabai -m window --toggle zoom-fullscreen
