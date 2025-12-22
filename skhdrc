@@ -3,7 +3,7 @@
 # Application Launches
 
 # Terminal
-alt - q : open -na /System/Applications/Utilities/Terminal.app
+alt - q : open -na /Applications/kitty.app
 
 # Browser
 cmd - b : open -a /Applications/Zen.app
