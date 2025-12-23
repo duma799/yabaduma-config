@@ -18,6 +18,10 @@ yabai -m config right_padding  10
 # Gaps: space between windows
 yabai -m config window_gap     10
 
+# External monitor specific padding (display 2)
+yabai -m config --space 5 top_padding 10
+yabai -m config --space 5 bottom_padding 24
+
 # Window Appearance
 
 # Window placement
@@ -39,14 +43,11 @@ yabai -m config mouse_follows_focus off
 # Focus follows mouse
 yabai -m config focus_follows_mouse autofocus
 
-# Modifier for moving windows (alt + left click drag)
-yabai -m config mouse_modifier alt
+# Modifier for moving windows (cmd + 3-finger drag)
+yabai -m config mouse_modifier cmd
 
 # Action on modifier + left click drag
 yabai -m config mouse_action1 move
-
-# Action on modifier + right click drag
-yabai -m config mouse_action2 resize
 
 # Where to place mouse when switching focus
 yabai -m config mouse_drop_action swap
