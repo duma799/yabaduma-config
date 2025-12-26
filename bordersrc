@@ -1,11 +1,31 @@
 #!/bin/bash
 
-options=(
-	style=round
-	width=3.0
-	hidpi=on
-	active_color="gradient(top_left=0xfffbf1c7,bottom_right=0xffebdbb2)"
-	inactive_color=0x40504945
-)
+# Source pywal colors
+if [ -f "${HOME}/.cache/wal/colors.sh" ]; then
+    source "${HOME}/.cache/wal/colors.sh"
+
+    # Convert pywal colors to borders format (remove # and add 0xff prefix)
+    active_color1=$(echo "$color6" | sed 's/#/0xff/')
+    active_color2=$(echo "$color4" | sed 's/#/0xff/')
+    inactive_color=$(echo "$color0" | sed 's/#/0x40/')  # 0x40 for transparency
+
+    # Use gradient from pywal colors
+    options=(
+        style=round
+        width=3.0
+        hidpi=on
+        active_color="gradient(top_left=${active_color1},bottom_right=${active_color2})"
+        inactive_color="${inactive_color}"
+    )
+else
+    # Fallback to Gruvbox colors if pywal not found
+    options=(
+        style=round
+        width=3.0
+        hidpi=on
+        active_color="gradient(top_left=0xfffbf1c7,bottom_right=0xffebdbb2)"
+        inactive_color=0x40504945
+    )
+fi
 
 borders "${options[@]}"

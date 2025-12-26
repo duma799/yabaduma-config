@@ -116,7 +116,7 @@ sketchybar --add item clock right \
            --set bluetooth update_freq=5 script="$PLUGIN_DIR/bluetooth.sh" \
                            padding_left=1 padding_right=2 \
                            icon.padding_left=0 icon.padding_right=0 \
-                           label.padding_left=8 label.padding_right=0 \
+                           label.padding_left=0 label.padding_right=0 \
            --add item battery right \
            --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
                            icon.padding_left=8 \
