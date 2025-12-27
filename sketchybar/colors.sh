@@ -1,19 +1,24 @@
 #!/bin/bash
 
+# Helper function to convert hex (#RRGGBB) to ARGB (0xffRRGGBB)
+hex_to_argb() {
+    local hex="${1#\#}"
+    echo "0xff${hex}"
+}
+
 # Check if pywal colors exist, otherwise use defaults
 if [ -f ~/.cache/wal/colors.sh ]; then
     # Source pywal colors
     source ~/.cache/wal/colors.sh
 
     # Export colors in sketchybar format (0xAARRGGBB)
-    # Convert #RRGGBB to 0xffRRGGBB
-    export BAR_COLOR="0xff${background:1}"
-    export ITEM_BG_COLOR="0xff${color0:1}"
-    export ACCENT_COLOR="0xff${color1:1}"
-    export ICON_COLOR="0xff${foreground:1}"
-    export LABEL_COLOR="0xff${foreground:1}"
-    export POPUP_BACKGROUND_COLOR="0xff${color0:1}"
-    export POPUP_BORDER_COLOR="0xff${color8:1}"
+    export BAR_COLOR=$(hex_to_argb "$background")
+    export ITEM_BG_COLOR=$(hex_to_argb "$color0")
+    export ACCENT_COLOR=$(hex_to_argb "$color1")
+    export ICON_COLOR=$(hex_to_argb "$foreground")
+    export LABEL_COLOR=$(hex_to_argb "$foreground")
+    export POPUP_BACKGROUND_COLOR=$(hex_to_argb "$color0")
+    export POPUP_BORDER_COLOR=$(hex_to_argb "$color8")
     export SHADOW_COLOR="0x80000000"
 else
     # Fallback colors (original colors)
