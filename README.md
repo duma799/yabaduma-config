@@ -50,6 +50,8 @@ cd ~/projects/yabaduma-config
 
 ln -sf ~/projects/yabaduma-config/yabairc ~/.yabairc
 ln -sf ~/projects/yabaduma-config/skhdrc ~/.skhdrc
+mkdir -p ~/.config/skhd
+ln -sf ~/projects/yabaduma-config/scripts ~/.config/skhd/scripts
 ln -sf ~/projects/yabaduma-config/bordersrc ~/.config/borders/bordersrc
 ln -sf ~/projects/yabaduma-config/sketchybar ~/.config/sketchybar
 
