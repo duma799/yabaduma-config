@@ -1,12 +1,12 @@
 # YabaDuma Config
 
-My macOS tiling WM setup. Yabai + pywal theming.
+MacOS tiling WM setup. Yabai + PyWal theming.
 
 **Tested on MacBook Air M4, macOS 26.2 Tahoe.**
 
 ## What's in here
 
-- **Yabai** - tiling WM (BSP layout, 10px gaps)
+- **Yabai** - tiling WM (BSP layout)
 - **SKHD** - keyboard shortcuts (see [Keybinds.md](Keybinds.md))
 - **JankyBorders** - window borders that pull colors from pywal
 - **SketchyBar** - status bar (workspaces, clock, volume, battery, bluetooth)
