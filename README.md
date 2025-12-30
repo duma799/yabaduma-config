@@ -30,6 +30,10 @@ Window opacity: active 1.0, inactive 0.9. No animations (macOS doesn't support i
 
 **Font:** Hack Nerd Font for icons - `brew install --cask font-hack-nerd-font`
 
+## Pre-Installation
+
+Disable SIP partially for yabai scripting addition. Follow the [yabai wiki](https://github.com/koekeishiya/yabai/wiki/Disabling-System-Integrity-Protection) guide - requires rebooting into recovery mode.
+
 ## Installation
 
 ```bash
@@ -69,7 +73,6 @@ brew services start sketchybar
 ```
 
 After install:
-- Disable SIP partially for yabai scripting addition ([yabai wiki](https://github.com/koekeishiya/yabai/wiki/Disabling-System-Integrity-Protection))
 - Grant accessibility permissions to yabai and skhd (System Settings → Privacy & Security → Accessibility)
 - Set a wallpaper: `wal -i /path/to/wallpaper.jpg`
 - Run `reload-theme`
@@ -88,21 +91,6 @@ To change which colors borders uses, edit `bordersrc`:
 ```bash
 active_color1=$(echo "$color6" | sed 's/#/0xff/')  # try color0-15
 active_color2=$(echo "$color4" | sed 's/#/0xff/')
-```
-
-## Files
-
-```
-yabaduma-config/
-├── yabairc              # yabai config
-├── skhdrc               # skhd keybinds
-├── bordersrc            # borders config (sources pywal)
-├── reload-theme.py      # reloads borders + sketchybar
-├── scripts/             # helper scripts for skhd
-└── sketchybar/
-    ├── sketchybarrc     # main config
-    ├── colors.sh        # pywal color loader
-    └── plugins/         # bar widgets
 ```
 
 ## Troubleshooting
