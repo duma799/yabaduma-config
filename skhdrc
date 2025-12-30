@@ -4,11 +4,11 @@
 # Keyboard shortcuts for yabai window management
 
 # Application Launches
-alt - q : open -na /Applications/kitty.app
-cmd - b : open -a /Applications/Zen.app
-alt - c : open -na /Applications/Visual\ Studio\ Code.app
-alt - s : open -a /Applications/Spotify.app
-cmd - return : open -a /System/Applications/Finder.app
+alt - q : open -na "kitty"
+cmd - b : open -a "Zen"
+alt - c : open -na "Visual Studio Code"
+alt - s : open -a "Spotify"
+cmd - return : open -a "Finder"
 
 # Window Navigation
 alt - left : yabai -m window --focus west
