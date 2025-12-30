@@ -1,32 +1,25 @@
 #!/bin/bash
 
-# Check if blueutil is installed
 if ! command -v blueutil &> /dev/null; then
     sketchybar --set "$NAME" icon="󰂲" label="N/A"
     exit 0
 fi
 
-# Get Bluetooth power status (1 = on, 0 = off)
 BT_POWER=$(blueutil -p)
 
 if [ "$BT_POWER" = "1" ]; then
-  # Bluetooth is ON - check for connected devices
   CONNECTED_DEVICES=$(blueutil --connected 2>/dev/null)
 
   if [ -n "$CONNECTED_DEVICES" ]; then
-    # Devices are connected
-    ICON="󰂱"  # Bluetooth connected icon
-    # Count connected devices
+    ICON="󰂱"
     COUNT=$(echo "$CONNECTED_DEVICES" | grep -c "address")
     LABEL="$COUNT"
   else
-    # Bluetooth on but no devices connected
-    ICON="󰂯"  # Bluetooth on icon
+    ICON="󰂯"
     LABEL=""
   fi
 else
-  # Bluetooth is OFF
-  ICON="󰂲"  # Bluetooth off icon
+  ICON="󰂲"
   LABEL=""
 fi
 

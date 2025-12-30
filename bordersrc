@@ -2,16 +2,13 @@
 
 COLORS_FILE="${HOME}/.cache/wal/colors.sh"
 
-# Source pywal colors
 if [ -f "$COLORS_FILE" ]; then
     source "$COLORS_FILE"
 
-    # Convert pywal colors to borders format (remove # and add 0xff prefix)
     active_color1=$(echo "$color6" | sed 's/#/0xff/')
     active_color2=$(echo "$color4" | sed 's/#/0xff/')
-    inactive_color=$(echo "$color0" | sed 's/#/0x40/')  # 0x40 for transparency
+    inactive_color=$(echo "$color0" | sed 's/#/0x40/')
 
-    # Use gradient from pywal colors
     options=(
         style=round
         width=3.0
@@ -20,8 +17,6 @@ if [ -f "$COLORS_FILE" ]; then
         inactive_color="${inactive_color}"
     )
 else
-    # Fallback to Gruvbox colors if pywal not found
-    echo "Warning: Pywal colors not found at $COLORS_FILE, using fallback colors" >&2
     options=(
         style=round
         width=3.0

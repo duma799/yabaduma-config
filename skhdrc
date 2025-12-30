@@ -1,43 +1,33 @@
 #!/usr/bin/env sh
 
-# YabaDuma - SKHD Configuration
-# Keyboard shortcuts for yabai window management
-
-# Application Launches
 alt - q : open -na "kitty"
 cmd - b : open -a "Zen"
 alt - c : open -na "Visual Studio Code"
 alt - s : open -a "Spotify"
 cmd - return : open -a "Finder"
 
-# Window Navigation
 alt - left : yabai -m window --focus west
 alt - down : yabai -m window --focus south
 alt - up : yabai -m window --focus north
 alt - right : yabai -m window --focus east
 
-# Window Movement / Swapping (smart swap with split toggle fallback)
 shift + alt - left : ~/.config/skhd/scripts/smart-swap.sh west
 shift + alt - right : ~/.config/skhd/scripts/smart-swap.sh east
 shift + alt - up : ~/.config/skhd/scripts/smart-swap.sh north
 shift + alt - down : ~/.config/skhd/scripts/smart-swap.sh south
 
-# Workspace Navigation
 shift + ctrl - left : yabai -m window --space prev; yabai -m space --focus prev
 shift + ctrl - right : yabai -m window --space next; yabai -m space --focus next
 
-# Window Resizing
 ctrl + alt - left : ~/.config/skhd/scripts/resize-window.sh left
 ctrl + alt - down : ~/.config/skhd/scripts/resize-window.sh down
 ctrl + alt - up : ~/.config/skhd/scripts/resize-window.sh up
 ctrl + alt - right : ~/.config/skhd/scripts/resize-window.sh right
 
-# Window State
 ctrl - z : yabai -m window --toggle float && yabai -m window --grid 4:4:1:1:2:2
 shift + alt - m : yabai -m window --toggle zoom-fullscreen
 alt - o : yabai -m window --toggle split
 
-# Space Layout
 ctrl + alt - r : yabai -m space --rotate 270
 ctrl + alt + shift - r : yabai -m space --rotate 90
 ctrl + alt - b : yabai -m space --balance
@@ -45,5 +35,4 @@ ctrl + alt - 1 : yabai -m space --layout bsp
 ctrl + alt - 2 : yabai -m space --layout stack
 ctrl + alt - 3 : yabai -m space --layout float
 
-# Service Management
 ctrl + alt + shift - 0 : yabai --restart-service

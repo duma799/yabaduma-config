@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# Helper function to convert hex (#RRGGBB) to ARGB (0xffRRGGBB)
 hex_to_argb() {
     local hex="${1#\#}"
     echo "0xff${hex}"
 }
 
-# Check if pywal colors exist, otherwise use defaults
 if [ -f ~/.cache/wal/colors.sh ]; then
-    # Source pywal colors
     source ~/.cache/wal/colors.sh
 
-    # Export colors in sketchybar format (0xAARRGGBB)
     export BAR_COLOR=$(hex_to_argb "$background")
     export ITEM_BG_COLOR=$(hex_to_argb "$color0")
     export ACCENT_COLOR=$(hex_to_argb "$color1")
@@ -21,7 +17,6 @@ if [ -f ~/.cache/wal/colors.sh ]; then
     export POPUP_BORDER_COLOR=$(hex_to_argb "$color8")
     export SHADOW_COLOR="0x80000000"
 else
-    # Fallback colors (original colors)
     export BAR_COLOR="0x00000000"
     export ITEM_BG_COLOR="0xf01e3a5f"
     export ACCENT_COLOR="0xff5f87af"
