@@ -11,7 +11,7 @@ def find_wal():
     wal_in_path = shutil.which("wal")
     if wal_in_path:
         return Path(wal_in_path)
-    
+
     home = Path.home()
     for version in ["3.14", "3.13", "3.12", "3.11", "3.10", "3.9"]:
         candidate = home / "Library" / "Python" / version / "bin" / "wal"
@@ -106,6 +106,64 @@ def lighten_color_by_amount(hex_color, amount):
     return f"#{r:02x}{g:02x}{b:02x}"
 
 
+def darken_color(hex_color, amount):
+    """Darken a color by a percentage (0.0 to 1.0)"""
+    hex_color = hex_color.lstrip("#")
+    r = int(hex_color[0:2], 16)
+    g = int(hex_color[2:4], 16)
+    b = int(hex_color[4:6], 16)
+
+    r = max(0, int(r * (1 - amount)))
+    g = max(0, int(g * (1 - amount)))
+    b = max(0, int(b * (1 - amount)))
+
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def adjust_saturation(hex_color, amount):
+    """Adjust saturation of a color. Positive amount increases, negative decreases."""
+    hex_color = hex_color.lstrip("#")
+    r = int(hex_color[0:2], 16)
+    g = int(hex_color[2:4], 16)
+    b = int(hex_color[4:6], 16)
+
+    # Convert to HSL-like adjustment
+    gray = (r + g + b) // 3
+
+    if amount > 0:
+        # Increase saturation - move away from gray
+        r = min(255, int(r + (r - gray) * amount))
+        g = min(255, int(g + (g - gray) * amount))
+        b = min(255, int(b + (b - gray) * amount))
+    else:
+        # Decrease saturation - move toward gray
+        factor = 1 + amount  # amount is negative, so this reduces
+        r = int(gray + (r - gray) * factor)
+        g = int(gray + (g - gray) * factor)
+        b = int(gray + (b - gray) * factor)
+
+    r = max(0, min(255, r))
+    g = max(0, min(255, g))
+    b = max(0, min(255, b))
+
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def blend_colors(hex_color1, hex_color2, ratio=0.5):
+    """Blend two colors together. ratio=0 gives color1, ratio=1 gives color2."""
+    c1 = hex_color1.lstrip("#")
+    c2 = hex_color2.lstrip("#")
+
+    r1, g1, b1 = int(c1[0:2], 16), int(c1[2:4], 16), int(c1[4:6], 16)
+    r2, g2, b2 = int(c2[0:2], 16), int(c2[2:4], 16), int(c2[4:6], 16)
+
+    r = int(r1 + (r2 - r1) * ratio)
+    g = int(g1 + (g2 - g1) * ratio)
+    b = int(b1 + (b2 - b1) * ratio)
+
+    return f"#{r:02x}{g:02x}{b:02x}"
+
+
 def update_zed_theme():
     colors_file = Path.home() / ".cache" / "wal" / "colors.json"
     zed_themes_dir = Path.home() / ".config" / "zed" / "themes"
@@ -131,13 +189,60 @@ def update_zed_theme():
         color2 = wal_colors["colors"]["color2"]
         color3 = wal_colors["colors"]["color3"]
         color4 = wal_colors["colors"]["color4"]
+        color5 = wal_colors["colors"]["color5"]
         color6 = wal_colors["colors"]["color6"]
+        color7 = wal_colors["colors"]["color7"]
         color8 = wal_colors["colors"]["color8"]
 
+        # Base semantic colors
         accent_color = color1
         icon_color = color4
         label_color = color6
         selection_bg = lighten_color(bg, 0.25)
+
+        # Background variations for visual hierarchy
+        bg_elevated = lighten_color(bg, 0.08)  # Panels, sidebars
+        bg_surface = lighten_color(bg, 0.04)  # Tab bar, status bar
+        bg_active = lighten_color(bg, 0.12)  # Active tab, active line
+
+        # Tonal variations for syntax highlighting
+        # Keywords family (accent-based tones)
+        keyword_color = color1
+        keyword_light = lighten_color(color1, 0.15)
+        keyword_dim = darken_color(color1, 0.2)
+
+        # String family (color2-based tones)
+        string_color = color2
+        string_light = lighten_color(color2, 0.2)
+        string_dim = darken_color(color2, 0.15)
+
+        # Function family (color3-based tones)
+        function_color = color3
+        function_light = lighten_color(color3, 0.15)
+        function_dim = darken_color(color3, 0.2)
+
+        # Type family (color4-based tones)
+        type_color = color4
+        type_light = lighten_color(color4, 0.15)
+        type_dim = darken_color(color4, 0.2)
+
+        # Neutral tones for punctuation and operators
+        punctuation_color = blend_colors(color8, label_color, 0.3)
+        operator_color = blend_colors(label_color, color3, 0.25)
+        bracket_color = blend_colors(color8, label_color, 0.5)
+
+        # Comment tones
+        comment_color = color8
+        comment_doc = lighten_color(color8, 0.15)
+
+        # Variable tones
+        variable_color = label_color
+        variable_special = blend_colors(label_color, color5, 0.3)
+        parameter_color = blend_colors(label_color, color4, 0.2)
+
+        # Property and attribute tones
+        property_color = blend_colors(label_color, color6, 0.4)
+        attribute_color = blend_colors(color4, color6, 0.4)
 
         zed_theme = {
             "$schema": "https://zed.dev/schema/themes/v0.1.0.json",
@@ -148,16 +253,16 @@ def update_zed_theme():
                     "name": "Pywal",
                     "appearance": "dark",
                     "style": {
-                        "border": bg,
-                        "border.variant": bg,
+                        "border": bg_surface,
+                        "border.variant": bg_elevated,
                         "border.focused": accent_color,
                         "border.selected": accent_color,
                         "border.transparent": "#00000000",
-                        "border.disabled": bg,
-                        "elevated_surface.background": bg,
-                        "surface.background": bg,
+                        "border.disabled": bg_surface,
+                        "elevated_surface.background": bg_elevated,
+                        "surface.background": bg_surface,
                         "background": bg,
-                        "element.background": bg,
+                        "element.background": bg_surface,
                         "element.hover": selection_bg,
                         "element.active": selection_bg,
                         "element.selected": selection_bg,
@@ -178,14 +283,14 @@ def update_zed_theme():
                         "icon.disabled": color8,
                         "icon.placeholder": color8,
                         "icon.accent": accent_color,
-                        "status_bar.background": bg,
+                        "status_bar.background": bg_surface,
                         "title_bar.background": bg,
-                        "toolbar.background": bg,
-                        "tab_bar.background": bg,
-                        "tab.inactive_background": bg,
+                        "toolbar.background": bg_surface,
+                        "tab_bar.background": bg_surface,
+                        "tab.inactive_background": bg_surface,
                         "tab.active_background": bg,
                         "search.match_background": selection_bg,
-                        "panel.background": bg,
+                        "panel.background": bg_elevated,
                         "panel.focused_border": accent_color,
                         "pane.focused_border": accent_color,
                         "scrollbar.thumb.background": f"{selection_bg}80",
@@ -196,9 +301,9 @@ def update_zed_theme():
                         "editor.foreground": label_color,
                         "editor.background": bg,
                         "editor.gutter.background": bg,
-                        "editor.subheader.background": bg,
-                        "editor.active_line.background": bg,
-                        "editor.highlighted_line.background": bg,
+                        "editor.subheader.background": bg_surface,
+                        "editor.active_line.background": bg_active,
+                        "editor.highlighted_line.background": bg_active,
                         "editor.line_number": color8,
                         "editor.active_line_number": label_color,
                         "editor.invisible": color8,
@@ -277,45 +382,60 @@ def update_zed_theme():
                         "warning.border": color3,
                         "players": [],
                         "syntax": {
-                            "attribute": {"color": label_color},
-                            "boolean": {"color": accent_color, "font_weight": 700},
-                            "comment": {"color": color8, "font_style": "italic"},
-                            "comment.doc": {"color": color8, "font_style": "italic"},
-                            "constant": {"color": accent_color, "font_weight": 700},
-                            "constructor": {"color": color3, "font_weight": 700},
-                            "embedded": {"color": label_color},
+                            "attribute": {"color": attribute_color},
+                            "boolean": {"color": keyword_light, "font_weight": 700},
+                            "comment": {"color": comment_color, "font_style": "italic"},
+                            "comment.doc": {
+                                "color": comment_doc,
+                                "font_style": "italic",
+                            },
+                            "constant": {"color": keyword_color, "font_weight": 700},
+                            "constructor": {
+                                "color": function_light,
+                                "font_weight": 700,
+                            },
+                            "embedded": {"color": variable_color},
                             "emphasis": {"font_style": "italic"},
                             "emphasis.strong": {"font_weight": 700},
-                            "enum": {"color": icon_color, "font_weight": 700},
-                            "function": {"color": color3, "font_weight": 700},
-                            "hint": {"color": color8, "font_weight": 700},
-                            "keyword": {"color": accent_color, "font_weight": 700},
+                            "enum": {"color": type_light, "font_weight": 700},
+                            "function": {"color": function_color, "font_weight": 700},
+                            "hint": {"color": comment_color, "font_weight": 700},
+                            "keyword": {"color": keyword_color, "font_weight": 700},
                             "label": {"color": label_color},
-                            "link_text": {"color": accent_color, "font_style": "italic"},
-                            "link_uri": {"color": accent_color},
-                            "number": {"color": accent_color},
-                            "operator": {"color": label_color},
-                            "predictive": {"color": color8, "font_style": "italic"},
-                            "preproc": {"color": label_color},
+                            "link_text": {
+                                "color": keyword_light,
+                                "font_style": "italic",
+                            },
+                            "link_uri": {"color": string_light},
+                            "number": {"color": keyword_dim},
+                            "operator": {"color": operator_color},
+                            "predictive": {
+                                "color": comment_color,
+                                "font_style": "italic",
+                            },
+                            "preproc": {"color": keyword_dim},
                             "primary": {"color": label_color},
-                            "property": {"color": label_color},
-                            "punctuation": {"color": color8},
-                            "punctuation.bracket": {"color": label_color},
-                            "punctuation.delimiter": {"color": label_color},
-                            "punctuation.list_marker": {"color": label_color},
-                            "punctuation.special": {"color": color8},
-                            "string": {"color": color2},
-                            "string.escape": {"color": color8},
-                            "string.regex": {"color": color2},
-                            "string.special": {"color": color2},
-                            "string.special.symbol": {"color": color2},
-                            "tag": {"color": icon_color},
-                            "text.literal": {"color": color2},
-                            "title": {"color": accent_color, "font_weight": 700},
-                            "type": {"color": icon_color, "font_weight": 700},
-                            "variable": {"color": label_color},
-                            "variable.special": {"color": label_color, "font_style": "italic"},
-                            "variant": {"color": icon_color},
+                            "property": {"color": property_color},
+                            "punctuation": {"color": punctuation_color},
+                            "punctuation.bracket": {"color": bracket_color},
+                            "punctuation.delimiter": {"color": punctuation_color},
+                            "punctuation.list_marker": {"color": punctuation_color},
+                            "punctuation.special": {"color": comment_color},
+                            "string": {"color": string_color},
+                            "string.escape": {"color": string_dim},
+                            "string.regex": {"color": string_light},
+                            "string.special": {"color": string_light},
+                            "string.special.symbol": {"color": string_dim},
+                            "tag": {"color": type_color},
+                            "text.literal": {"color": string_color},
+                            "title": {"color": keyword_light, "font_weight": 700},
+                            "type": {"color": type_color, "font_weight": 700},
+                            "variable": {"color": variable_color},
+                            "variable.special": {
+                                "color": variable_special,
+                                "font_style": "italic",
+                            },
+                            "variant": {"color": type_dim},
                         },
                     },
                 }
@@ -330,6 +450,7 @@ def update_zed_theme():
                 content = f.read()
 
             import re
+
             updated_content = re.sub(
                 r'"theme":\s*\{[^}]*"dark":\s*"[^"]*"',
                 '"theme": {\n    "mode": "system",\n    "light": "Ayu Light",\n    "dark": "Pywal"',
@@ -349,7 +470,12 @@ def update_zed_theme():
 def update_vscode_settings():
     colors_file = Path.home() / ".cache" / "wal" / "colors.json"
     settings_file = (
-        Path.home() / "Library" / "Application Support" / "Code" / "User" / "settings.json"
+        Path.home()
+        / "Library"
+        / "Application Support"
+        / "Code"
+        / "User"
+        / "settings.json"
     )
 
     if not colors_file.exists():
@@ -374,13 +500,55 @@ def update_vscode_settings():
         color2 = wal_colors["colors"]["color2"]
         color3 = wal_colors["colors"]["color3"]
         color4 = wal_colors["colors"]["color4"]
+        color5 = wal_colors["colors"]["color5"]
         color6 = wal_colors["colors"]["color6"]
+        color7 = wal_colors["colors"]["color7"]
         color8 = wal_colors["colors"]["color8"]
 
+        # Base semantic colors
         accent_color = color1
         icon_color = color4
         label_color = color6
         selection_bg = lighten_color(bg, 0.25)
+
+        # Tonal variations for syntax highlighting
+        # Keywords family (accent-based tones)
+        keyword_color = color1
+        keyword_light = lighten_color(color1, 0.15)
+        keyword_dim = darken_color(color1, 0.2)
+
+        # String family (color2-based tones)
+        string_color = color2
+        string_light = lighten_color(color2, 0.2)
+        string_dim = darken_color(color2, 0.15)
+
+        # Function family (color3-based tones)
+        function_color = color3
+        function_light = lighten_color(color3, 0.15)
+        function_dim = darken_color(color3, 0.2)
+
+        # Type family (color4-based tones)
+        type_color = color4
+        type_light = lighten_color(color4, 0.15)
+        type_dim = darken_color(color4, 0.2)
+
+        # Neutral tones for punctuation and operators
+        punctuation_color = blend_colors(color8, label_color, 0.3)
+        operator_color = blend_colors(label_color, color3, 0.25)
+        bracket_color = blend_colors(color8, label_color, 0.5)
+
+        # Comment tones
+        comment_color = color8
+        comment_doc = lighten_color(color8, 0.15)
+
+        # Variable tones
+        variable_color = label_color
+        variable_special = blend_colors(label_color, color5, 0.3)
+        parameter_color = blend_colors(label_color, color4, 0.2)
+
+        # Property and attribute tones
+        property_color = blend_colors(label_color, color6, 0.4)
+        attribute_color = blend_colors(color4, color6, 0.4)
 
         vscode_settings["workbench.colorCustomizations"] = {
             "editor.background": bg,
@@ -518,45 +686,167 @@ def update_vscode_settings():
         }
 
         vscode_settings["editor.tokenColorCustomizations"] = {
-            "comments": {"foreground": color8, "fontStyle": "italic"},
-            "keywords": {"foreground": accent_color, "fontStyle": "bold"},
-            "functions": {"foreground": color3, "fontStyle": "bold"},
-            "variables": {"foreground": label_color},
-            "strings": {"foreground": color2},
-            "types": {"foreground": icon_color, "fontStyle": "bold"},
-            "numbers": {"foreground": accent_color},
+            "comments": {"foreground": comment_color, "fontStyle": "italic"},
+            "keywords": {"foreground": keyword_color, "fontStyle": "bold"},
+            "functions": {"foreground": function_color, "fontStyle": "bold"},
+            "variables": {"foreground": variable_color},
+            "strings": {"foreground": string_color},
+            "types": {"foreground": type_color, "fontStyle": "bold"},
+            "numbers": {"foreground": keyword_dim},
             "textMateRules": [
+                # Storage keywords (let, const, var, function, class, etc.)
                 {
                     "scope": ["storage.type", "storage.modifier"],
-                    "settings": {"foreground": accent_color, "fontStyle": "bold"},
+                    "settings": {"foreground": keyword_color, "fontStyle": "bold"},
                 },
+                # Type names and classes
                 {
                     "scope": ["entity.name.type", "entity.name.class"],
-                    "settings": {"foreground": icon_color, "fontStyle": "bold"},
+                    "settings": {"foreground": type_color, "fontStyle": "bold"},
                 },
-                {
-                    "scope": ["entity.name.function", "support.function"],
-                    "settings": {"foreground": color3, "fontStyle": "bold"},
-                },
-                {
-                    "scope": "variable.parameter",
-                    "settings": {"foreground": label_color, "fontStyle": "italic"},
-                },
-                {
-                    "scope": "constant.language",
-                    "settings": {"foreground": accent_color, "fontStyle": "bold"},
-                },
+                # Interfaces and type parameters - lighter type tone
                 {
                     "scope": [
-                        "punctuation.definition.string",
+                        "entity.name.type.interface",
+                        "entity.name.type.type-parameter",
+                    ],
+                    "settings": {"foreground": type_light, "fontStyle": "bold"},
+                },
+                # Enums - lighter type tone
+                {
+                    "scope": "entity.name.type.enum",
+                    "settings": {"foreground": type_light, "fontStyle": "bold"},
+                },
+                # Functions and methods
+                {
+                    "scope": ["entity.name.function", "support.function"],
+                    "settings": {"foreground": function_color, "fontStyle": "bold"},
+                },
+                # Method calls - lighter function tone
+                {
+                    "scope": "entity.name.function.member",
+                    "settings": {"foreground": function_light, "fontStyle": "bold"},
+                },
+                # Constructors - lighter function tone
+                {
+                    "scope": "entity.name.function.constructor",
+                    "settings": {"foreground": function_light, "fontStyle": "bold"},
+                },
+                # Parameters - italic with parameter color
+                {
+                    "scope": "variable.parameter",
+                    "settings": {"foreground": parameter_color, "fontStyle": "italic"},
+                },
+                # Language constants (true, false, null, etc.) - lighter keyword
+                {
+                    "scope": "constant.language",
+                    "settings": {"foreground": keyword_light, "fontStyle": "bold"},
+                },
+                # Numeric constants - dim keyword
+                {
+                    "scope": "constant.numeric",
+                    "settings": {"foreground": keyword_dim},
+                },
+                # Object properties
+                {
+                    "scope": [
+                        "variable.other.property",
+                        "variable.other.object.property",
+                    ],
+                    "settings": {"foreground": property_color},
+                },
+                # Special variables (this, self, super)
+                {
+                    "scope": ["variable.language", "variable.language.this"],
+                    "settings": {"foreground": variable_special, "fontStyle": "italic"},
+                },
+                # String punctuation - dim string
+                {
+                    "scope": "punctuation.definition.string",
+                    "settings": {"foreground": string_dim},
+                },
+                # Escape sequences in strings
+                {
+                    "scope": "constant.character.escape",
+                    "settings": {"foreground": string_dim},
+                },
+                # Regex - lighter string
+                {
+                    "scope": "string.regexp",
+                    "settings": {"foreground": string_light},
+                },
+                # Template literals
+                {
+                    "scope": "string.template",
+                    "settings": {"foreground": string_color},
+                },
+                # Template expression punctuation
+                {
+                    "scope": "punctuation.definition.template-expression",
+                    "settings": {"foreground": keyword_dim},
+                },
+                # General punctuation
+                {
+                    "scope": [
                         "punctuation.definition.variable",
                         "punctuation.definition.parameters",
                         "punctuation.definition.array",
                     ],
-                    "settings": {"foreground": color8},
+                    "settings": {"foreground": punctuation_color},
                 },
-                {"scope": "punctuation.separator", "settings": {"foreground": label_color}},
-                {"scope": "meta.brace", "settings": {"foreground": label_color}},
+                # Separators (commas, semicolons)
+                {
+                    "scope": ["punctuation.separator", "punctuation.terminator"],
+                    "settings": {"foreground": punctuation_color},
+                },
+                # Brackets and braces
+                {
+                    "scope": ["meta.brace", "punctuation.definition.block"],
+                    "settings": {"foreground": bracket_color},
+                },
+                # Operators
+                {
+                    "scope": "keyword.operator",
+                    "settings": {"foreground": operator_color},
+                },
+                # Comparison and assignment operators
+                {
+                    "scope": [
+                        "keyword.operator.comparison",
+                        "keyword.operator.assignment",
+                    ],
+                    "settings": {"foreground": operator_color},
+                },
+                # Attributes (decorators, annotations)
+                {
+                    "scope": ["entity.name.function.decorator", "meta.decorator"],
+                    "settings": {"foreground": attribute_color},
+                },
+                # Tags (HTML, JSX)
+                {
+                    "scope": "entity.name.tag",
+                    "settings": {"foreground": type_color},
+                },
+                # Tag attributes
+                {
+                    "scope": "entity.other.attribute-name",
+                    "settings": {"foreground": attribute_color},
+                },
+                # Doc comments - slightly lighter
+                {
+                    "scope": ["comment.block.documentation", "comment.block.javadoc"],
+                    "settings": {"foreground": comment_doc, "fontStyle": "italic"},
+                },
+                # Import/export keywords
+                {
+                    "scope": ["keyword.control.import", "keyword.control.export"],
+                    "settings": {"foreground": keyword_dim},
+                },
+                # Module names in imports
+                {
+                    "scope": "entity.name.type.module",
+                    "settings": {"foreground": string_color},
+                },
             ],
         }
 
