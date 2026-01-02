@@ -20,12 +20,12 @@ lighten_hex() {
 if [ -f ~/.cache/wal/colors.sh ]; then
     source ~/.cache/wal/colors.sh
 
-    export BAR_COLOR=$(lighten_hex "$background" 25)
-    export ITEM_BG_COLOR=$(lighten_hex "$background" 25)
+    export BAR_COLOR=$(hex_to_argb "$background")
+    export ITEM_BG_COLOR=$(hex_to_argb "$background")
     export ACCENT_COLOR=$(hex_to_argb "$color1")
     export ICON_COLOR=$(hex_to_argb "$color4")
     export LABEL_COLOR=$(hex_to_argb "$color6")
-    export POPUP_BACKGROUND_COLOR=$(lighten_hex "$background" 20)
+    export POPUP_BACKGROUND_COLOR=$(hex_to_argb "$background")
     export POPUP_BORDER_COLOR=$(hex_to_argb "$color1")
     export SHADOW_COLOR="0x80000000"
 else
