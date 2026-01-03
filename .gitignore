@@ -1,9 +1,26 @@
+# Development files
 PLANS.md
-__pycache__/
-*.pyc
-.DS_Store
-.cache/
-*.log
 .obsidian/
 .claude/
-showcases/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Temporary files
+.cache/
+*.log
+*.tmp
+
+# Empty directories
+keybinds-visualizer/
+
+# Keep screenshots in repo
+!screenshots/
