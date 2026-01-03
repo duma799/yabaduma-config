@@ -1,20 +1,37 @@
 # YabaDuma Config
 
-MacOS tiling WM setup. Yabai + PyWal theming.
+MacOS tiling WM setup with dynamic color theming. Built with Yabai, SketchyBar, and PyWal.
 
 **Tested on MacBook Air M4, macOS 26.2 Tahoe.**
 
+## Showcase
+
+<div align="center">
+  <img src="screenshots/1.jpeg" alt="Desktop with tiling windows" width="800"/>
+  <p><i>Tiling window management with dynamic PyWal theming</i></p>
+</div>
+
+<div align="center">
+  <img src="screenshots/2.png" alt="SketchyBar and window borders" width="800"/>
+  <p><i>Custom SketchyBar with system info and JankyBorders integration</i></p>
+</div>
+
+### Features
+- **Dynamic theming** - Colors automatically generated from your wallpaper using PyWal
+- **Tiling window management** - BSP-like layout with Yabai
+- **Custom status bar** - SketchyBar with battery, bluetooth, wifi, volume, and workspace indicators
+- **Window borders** - JankyBorders with gradient colors from PyWal
+- **Editor integration** - Script updates VSCode and Zed themes to match your wallpaper
+- **Keyboard-driven** - Extensive keybinds for window manipulation (see [Keybinds.md](Keybinds.md))
+
 ## What's in here
 
-- **Yabai** - tiling WM (BSP layout)
+- **Yabai** - tiling WM
 - **SKHD** - keyboard shortcuts (see [Keybinds.md](Keybinds.md))
 - **JankyBorders** - window borders that pull colors from pywal
 - **SketchyBar** - status bar
 - **Pywal** - generates color scheme from your wallpaper
 
-Window opacity: active 1.0, inactive 0.9. No animations (macOS doesn't support it through yabai).
-
-4-finger gestures work for switching workspaces.
 
 ## Dependencies
 
@@ -30,11 +47,23 @@ Window opacity: active 1.0, inactive 0.9. No animations (macOS doesn't support i
 
 **Font:** Hack Nerd Font for icons - `brew install --cask font-hack-nerd-font`
 
-## Pre-Installation
+## Quick Start (Recommended)
 
-Disable SIP partially for yabai scripting addition. Follow the [yabai wiki](https://github.com/koekeishiya/yabai/wiki/Disabling-System-Integrity-Protection) guide - requires rebooting into recovery mode.
+1. **Disable SIP partially** for yabai scripting addition. Follow the [yabai wiki](https://github.com/koekeishiya/yabai/wiki/Disabling-System-Integrity-Protection) guide - requires rebooting into recovery mode.
 
-## Installation
+2. **Run the automated installer:**
+   ```bash
+   git clone https://github.com/duma799/yabaduma-config.git ~/projects/yabaduma-config
+   cd ~/projects/yabaduma-config
+   ./install.py
+   ```
+
+3. **Post-installation:**
+   - Grant accessibility permissions when prompted (System Settings → Privacy & Security → Accessibility)
+   - Set a wallpaper: `wal -i /path/to/wallpaper.jpg` or use one from [backgrounds/](backgrounds/)
+   - Run `reload-theme` to apply colors
+
+## Manual Installation
 
 ```bash
 # Homebrew (if you don't have it)
@@ -72,19 +101,7 @@ brew services start borders
 brew services start sketchybar
 ```
 
-After install:
-- Grant accessibility permissions to yabai and skhd (System Settings → Privacy & Security → Accessibility)
-- Set a wallpaper: `wal -i /path/to/wallpaper.jpg`
-- Run `reload-theme`
-
-## Helper Scripts
-
-### Automated Install
-Instead of the manual steps above, you can run the installer script. It will check for dependencies, install packages, and symlink configs (backing up old ones).
-
-```bash
-./install.py
-```
+After manual install, follow the same post-installation steps as in Quick Start above.
 
 
 
