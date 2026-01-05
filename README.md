@@ -45,6 +45,8 @@ MacOS tiling WM setup with dynamic color theming. Built with Yabai, SketchyBar, 
 
 **Optional:** `blueutil` for bluetooth status, `kitty` terminal.
 
+**Python:** Scripts use standard library only, no `requirements.txt` needed.
+
 **Font:** Hack Nerd Font for icons - `brew install --cask font-hack-nerd-font`
 
 ## Quick Start (Recommended)
