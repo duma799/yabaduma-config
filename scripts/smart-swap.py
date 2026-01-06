@@ -1,9 +1,27 @@
 #!/usr/bin/env python3
 
+import shutil
 import subprocess
 import sys
 
 VALID_DIRECTIONS = {"west", "east", "north", "south"}
+
+
+def check_yabai() -> bool:
+    """Check if yabai is installed and running."""
+    if not shutil.which("yabai"):
+        print("Error: yabai is not installed or not in PATH", file=sys.stderr)
+        return False
+
+    result = subprocess.run(
+        ["yabai", "-m", "query", "--windows"],
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        print("Error: yabai is not running", file=sys.stderr)
+        return False
+
+    return True
 
 
 def swap_window(direction: str) -> bool:
@@ -27,6 +45,9 @@ def main():
 
     if direction not in VALID_DIRECTIONS:
         print("Usage: smart-swap.py <west|east|north|south>", file=sys.stderr)
+        sys.exit(1)
+
+    if not check_yabai():
         sys.exit(1)
 
     if not swap_window(direction):

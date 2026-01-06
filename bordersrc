@@ -2,28 +2,49 @@
 
 COLORS_FILE="${HOME}/.cache/wal/colors.sh"
 
+# Gruvbox fallback colors
+FALLBACK_ACTIVE1="0xfffbf1c7"
+FALLBACK_ACTIVE2="0xffebdbb2"
+FALLBACK_INACTIVE="0x40504945"
+
+use_fallback() {
+    options=(
+        style=round
+        width=3.0
+        hidpi=on
+        active_color="gradient(top_left=${FALLBACK_ACTIVE1},bottom_right=${FALLBACK_ACTIVE2})"
+        inactive_color="${FALLBACK_INACTIVE}"
+    )
+}
+
 if [ -f "$COLORS_FILE" ]; then
     source "$COLORS_FILE"
 
-    active_color1=$(echo "$color6" | sed 's/#/0xff/')
-    active_color2=$(echo "$color4" | sed 's/#/0xff/')
-    inactive_color=$(echo "$color0" | sed 's/#/0x40/')
+    # Validate that colors are not empty
+    if [ -z "$color6" ] || [ -z "$color4" ] || [ -z "$color0" ]; then
+        use_fallback
+    else
+        active_color1=$(echo "$color6" | sed 's/#/0xff/')
+        active_color2=$(echo "$color4" | sed 's/#/0xff/')
+        inactive_color=$(echo "$color0" | sed 's/#/0x40/')
 
-    options=(
-        style=round
-        width=3.0
-        hidpi=on
-        active_color="gradient(top_left=${active_color1},bottom_right=${active_color2})"
-        inactive_color="${inactive_color}"
-    )
+        # Validate color format (should be 0xff followed by 6 hex chars)
+        if [[ ! "$active_color1" =~ ^0xff[0-9a-fA-F]{6}$ ]] || \
+           [[ ! "$active_color2" =~ ^0xff[0-9a-fA-F]{6}$ ]] || \
+           [[ ! "$inactive_color" =~ ^0x40[0-9a-fA-F]{6}$ ]]; then
+            use_fallback
+        else
+            options=(
+                style=round
+                width=3.0
+                hidpi=on
+                active_color="gradient(top_left=${active_color1},bottom_right=${active_color2})"
+                inactive_color="${inactive_color}"
+            )
+        fi
+    fi
 else
-    options=(
-        style=round
-        width=3.0
-        hidpi=on
-        active_color="gradient(top_left=0xfffbf1c7,bottom_right=0xffebdbb2)"
-        inactive_color=0x40504945
-    )
+    use_fallback
 fi
 
 borders "${options[@]}"

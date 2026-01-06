@@ -90,21 +90,6 @@ sketchybar --add bracket spaces_bracket "${SPACE_IDS[@]}" \
                                 background.height=28 \
                                 background.border_width=0
 
-# Left Part
-
-# sketchybar --add item spacer left \
-#            --set spacer width=10 \
-#            \
-#            --add item front_app left \
-#            --set front_app icon=">" script="$PLUGIN_DIR/front_app.sh" \
-#            --subscribe front_app front_app_switched \
-#            \
-#            --add bracket front_app_bracket front_app \
-#            --set front_app_bracket background.color="$ITEM_BG_COLOR" \
-#                                    background.corner_radius=16 \
-#                                    background.height=28 \
-#                                    background.border_width=0
-
 # Right Part
 
 sketchybar --add item clock right \
