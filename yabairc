@@ -36,3 +36,11 @@ yabai -m rule --add title="Preferences$" manage=off
 yabai -m rule --add title="Settings$" manage=off
 
 yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+
+# Toggle spaces 6-7 visibility based on display count
+yabai -m signal --add event=display_added action='
+  sketchybar --set space.6 drawing=on --set space.7 drawing=on
+'
+yabai -m signal --add event=display_removed action='
+  sketchybar --set space.6 drawing=off --set space.7 drawing=off
+'
