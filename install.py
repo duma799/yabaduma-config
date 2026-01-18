@@ -148,32 +148,30 @@ def setup_files():
 
 def start_services():
     log("Starting services...")
-    services = [
-        "koekeishiya/formulae/yabai",
-        "koekeishiya/formulae/skhd",
-        "FelixKratz/formulae/borders",
-        "FelixKratz/formulae/sketchybar",
-    ]
 
-    for service in services:
-        short_name = service.split("/")[-1]
-        log(f"Restarting {short_name}...")
+    # yabai and skhd use their own service management (not brew services)
+    for tool in ["yabai", "skhd"]:
+        log(f"Starting {tool}...")
+        # Stop first if running, ignore errors
+        run_cmd([tool, "--stop-service"])
+        if run_cmd([tool, "--start-service"]):
+            success(f"{tool} service started.")
+        else:
+            warn(
+                f"Failed to start {tool}. "
+                f"Run '{tool} --start-service' manually after granting Accessibility permissions."
+            )
 
+    # borders and sketchybar use brew services
+    brew_services = ["borders", "sketchybar"]
+    for service in brew_services:
+        log(f"Starting {service}...")
         if run_cmd(["brew", "services", "restart", service]):
-            continue
-
-        log(f"Trying short name {short_name}...")
-        if run_cmd(["brew", "services", "restart", short_name]):
-            continue
-
-        if short_name in ["yabai", "skhd"]:
-            log(f"Trying {short_name} --restart-service...")
-            if run_cmd([short_name, "--restart-service"]):
-                continue
-
-        warn(
-            f"Failed to restart {short_name}. Run 'brew services restart {short_name}' manually."
-        )
+            success(f"{service} service started.")
+        else:
+            warn(
+                f"Failed to start {service}. Run 'brew services restart {service}' manually."
+            )
 
 
 def main():
