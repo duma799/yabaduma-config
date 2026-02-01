@@ -24,6 +24,7 @@ yabai -m config normal_window_opacity 0.9
 
 yabai -m config window_shadow float
 
+
 yabai -m config mouse_follows_focus off
 yabai -m config focus_follows_mouse autofocus
 yabai -m config mouse_modifier fn
@@ -37,8 +38,11 @@ yabai -m rule --add app="^Archive Utility$" manage=off
 yabai -m rule --add app="^Finder$" manage=off
 yabai -m rule --add title="Preferences$" manage=off
 yabai -m rule --add title="Settings$" manage=off
+yabai -m rule --add title="^scratchpad$" manage=off sticky=on grid=10:10:1:1:8:7
 
 yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+
+
 
 # Force horizontal split for 3rd+ window: toggle any new window that got vertical split
 yabai -m signal --add event=window_created action='
