@@ -14,20 +14,20 @@
 
 | Keybind | Action |
 |---------|--------|
-| Option + Arrow | Focus window in direction |
+| Option + Arrow / hjkl | Focus window in direction |
 
 ## Swap Windows
 
 | Keybind | Action |
 |---------|--------|
-| Shift + Option + Arrow | Swap window in direction |
+| Shift + Option + Arrow / hjkl | Swap window in direction |
 
 ## Resize
 
 | Keybind | Action |
 |---------|--------|
-| Ctrl + Option + Left/Right | Shrink/expand width |
-| Ctrl + Option + Up/Down | Shrink/expand height |
+| Ctrl + Option + Left/Right / h/l | Shrink/expand width |
+| Ctrl + Option + Up/Down / k/j | Shrink/expand height |
 
 ## Window State
 
@@ -41,8 +41,8 @@
 
 | Keybind | Action |
 |---------|--------|
-| Shift + Ctrl + Left | Move window to prev workspace |
-| Shift + Ctrl + Right | Move window to next workspace |
+| Shift + Ctrl + Left / h | Move window to prev workspace |
+| Shift + Ctrl + Right / l | Move window to next workspace |
 
 ## Layout
 
