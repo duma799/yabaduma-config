@@ -26,6 +26,10 @@ shift + alt - l : ~/.config/skhd/scripts/smart-swap.py east
 shift + alt - k : ~/.config/skhd/scripts/smart-swap.py north
 shift + alt - j : ~/.config/skhd/scripts/smart-swap.py south
 
+# Switch workspace (vim-style)
+ctrl - h : skhd -k "ctrl - left"
+ctrl - l : skhd -k "ctrl - right"
+
 # Move to workspace (arrows and vim-style)
 shift + ctrl - left : yabai -m window --space prev; yabai -m space --focus prev
 shift + ctrl - right : yabai -m window --space next; yabai -m space --focus next

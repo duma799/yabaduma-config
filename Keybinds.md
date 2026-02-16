@@ -37,6 +37,13 @@
 | Shift + Option + M | Toggle fullscreen |
 | Option + O | Toggle split orientation |
 
+## Switch Workspace
+
+| Keybind | Action |
+|---------|--------|
+| Ctrl + h | Switch to prev workspace |
+| Ctrl + l | Switch to next workspace |
+
 ## Move to Workspace
 
 | Keybind | Action |
