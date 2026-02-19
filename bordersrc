@@ -2,7 +2,6 @@
 
 COLORS_FILE="${HOME}/.cache/wal/colors.sh"
 
-# Gruvbox fallback colors
 FALLBACK_ACTIVE1="0xfffbf1c7"
 FALLBACK_ACTIVE2="0xffebdbb2"
 FALLBACK_INACTIVE="0x40504945"
@@ -20,7 +19,6 @@ use_fallback() {
 if [ -f "$COLORS_FILE" ]; then
     source "$COLORS_FILE"
 
-    # Validate that colors are not empty
     if [ -z "$color6" ] || [ -z "$color4" ] || [ -z "$color0" ]; then
         use_fallback
     else
@@ -28,7 +26,6 @@ if [ -f "$COLORS_FILE" ]; then
         active_color2=$(echo "$color4" | sed 's/#/0xff/')
         inactive_color=$(echo "$color0" | sed 's/#/0x40/')
 
-        # Validate color format (should be 0xff followed by 6 hex chars)
         if [[ ! "$active_color1" =~ ^0xff[0-9a-fA-F]{6}$ ]] || \
            [[ ! "$active_color2" =~ ^0xff[0-9a-fA-F]{6}$ ]] || \
            [[ ! "$inactive_color" =~ ^0x40[0-9a-fA-F]{6}$ ]]; then

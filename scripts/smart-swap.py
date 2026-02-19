@@ -8,7 +8,6 @@ VALID_DIRECTIONS = {"west", "east", "north", "south"}
 
 
 def check_yabai() -> bool:
-    """Check if yabai is installed and running."""
     if not shutil.which("yabai"):
         print("Error: yabai is not installed or not in PATH", file=sys.stderr)
         return False

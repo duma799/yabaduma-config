@@ -165,7 +165,6 @@ def setup_files(install_sketchybar=True, install_borders=True):
 def start_services(install_sketchybar=True, install_borders=True):
     log("Starting services...")
 
-    # yabai and skhd use their own service management (not brew services)
     for tool in ["yabai", "skhd"]:
         log(f"Starting {tool}...")
         run_cmd([tool, "--stop-service"])
@@ -177,7 +176,6 @@ def start_services(install_sketchybar=True, install_borders=True):
                 f"Run '{tool} --start-service' manually after granting Accessibility permissions."
             )
 
-    # borders and sketchybar use brew services
     brew_services = []
     if install_borders:
         brew_services.append("borders")

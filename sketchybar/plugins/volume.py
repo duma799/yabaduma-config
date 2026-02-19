@@ -10,7 +10,6 @@ ICON_MUTE = "󰖁"
 
 
 def get_current_volume() -> int:
-    """Get current system volume using osascript."""
     result = subprocess.run(
         ["osascript", "-e", "output volume of (get volume settings)"],
         capture_output=True,
@@ -48,7 +47,6 @@ def main():
         except ValueError:
             volume = 0
     else:
-        # Initial load - get current volume from system
         volume = get_current_volume()
 
     update_volume(name, volume)

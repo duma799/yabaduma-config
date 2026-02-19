@@ -6,7 +6,6 @@ alt - c : open -na "Visual Studio Code"
 alt - s : open -a "Spotify"
 cmd - return : open -a "Finder"
 
-# Window focus (arrows and vim-style)
 alt - left : yabai -m window --focus west
 alt - down : yabai -m window --focus south
 alt - up : yabai -m window --focus north
@@ -16,7 +15,6 @@ alt - j : yabai -m window --focus south
 alt - k : yabai -m window --focus north
 alt - l : yabai -m window --focus east
 
-# Window swap (arrows and vim-style)
 shift + alt - left : ~/.config/skhd/scripts/smart-swap.py west
 shift + alt - right : ~/.config/skhd/scripts/smart-swap.py east
 shift + alt - up : ~/.config/skhd/scripts/smart-swap.py north
@@ -26,17 +24,14 @@ shift + alt - l : ~/.config/skhd/scripts/smart-swap.py east
 shift + alt - k : ~/.config/skhd/scripts/smart-swap.py north
 shift + alt - j : ~/.config/skhd/scripts/smart-swap.py south
 
-# Switch workspace (vim-style)
 ctrl - h : skhd -k "ctrl - left"
 ctrl - l : skhd -k "ctrl - right"
 
-# Move to workspace (arrows and vim-style)
 shift + ctrl - left : yabai -m window --space prev; yabai -m space --focus prev
 shift + ctrl - right : yabai -m window --space next; yabai -m space --focus next
 shift + ctrl - h : yabai -m window --space prev; yabai -m space --focus prev
 shift + ctrl - l : yabai -m window --space next; yabai -m space --focus next
 
-# Window resize (arrows and vim-style)
 ctrl + alt - left : ~/.config/skhd/scripts/resize-window.py left
 ctrl + alt - down : ~/.config/skhd/scripts/resize-window.py down
 ctrl + alt - up : ~/.config/skhd/scripts/resize-window.py up
@@ -59,5 +54,4 @@ ctrl + alt - 3 : yabai -m space --layout float
 
 ctrl + alt + shift - 0 : yabai --restart-service
 
-# Scratchpad terminal toggle
 cmd + shift - t : ~/.config/skhd/scripts/scratchpad.py

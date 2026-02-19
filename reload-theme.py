@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any, Dict
 
 
 def find_wal():
@@ -45,6 +46,13 @@ def set_wallpaper(wal_path, wallpaper_path):
 
 
 def reload_borders():
+    result = subprocess.run(
+        ["pgrep", "-x", "borders"], capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        print("Borders not running, skipping")
+        return False
+
     print("Reloading borders...")
     try:
         subprocess.run(
@@ -107,7 +115,6 @@ def lighten_color_by_amount(hex_color, amount):
 
 
 def darken_color(hex_color, amount):
-    """Darken a color by a percentage (0.0 to 1.0)"""
     hex_color = hex_color.lstrip("#")
     r = int(hex_color[0:2], 16)
     g = int(hex_color[2:4], 16)
@@ -121,23 +128,19 @@ def darken_color(hex_color, amount):
 
 
 def adjust_saturation(hex_color, amount):
-    """Adjust saturation of a color. Positive amount increases, negative decreases."""
     hex_color = hex_color.lstrip("#")
     r = int(hex_color[0:2], 16)
     g = int(hex_color[2:4], 16)
     b = int(hex_color[4:6], 16)
 
-    # Convert to HSL-like adjustment
     gray = (r + g + b) // 3
 
     if amount > 0:
-        # Increase saturation - move away from gray
         r = min(255, int(r + (r - gray) * amount))
         g = min(255, int(g + (g - gray) * amount))
         b = min(255, int(b + (b - gray) * amount))
     else:
-        # Decrease saturation - move toward gray
-        factor = 1 + amount  # amount is negative, so this reduces
+        factor = 1 + amount
         r = int(gray + (r - gray) * factor)
         g = int(gray + (g - gray) * factor)
         b = int(gray + (b - gray) * factor)
@@ -150,7 +153,6 @@ def adjust_saturation(hex_color, amount):
 
 
 def blend_colors(hex_color1, hex_color2, ratio=0.5):
-    """Blend two colors together. ratio=0 gives color1, ratio=1 gives color2."""
     c1 = hex_color1.lstrip("#")
     c2 = hex_color2.lstrip("#")
 
@@ -184,63 +186,49 @@ def update_zed_theme():
             wal_colors = json.load(f)
 
         bg = wal_colors["special"]["background"]
-        fg = wal_colors["special"]["foreground"]
         color1 = wal_colors["colors"]["color1"]
         color2 = wal_colors["colors"]["color2"]
         color3 = wal_colors["colors"]["color3"]
         color4 = wal_colors["colors"]["color4"]
         color5 = wal_colors["colors"]["color5"]
         color6 = wal_colors["colors"]["color6"]
-        color7 = wal_colors["colors"]["color7"]
         color8 = wal_colors["colors"]["color8"]
 
-        # Base semantic colors
         accent_color = color1
         icon_color = color4
         label_color = color6
         selection_bg = lighten_color(bg, 0.25)
 
-        # Background variations for visual hierarchy
-        bg_elevated = lighten_color(bg, 0.08)  # Panels, sidebars
-        bg_surface = lighten_color(bg, 0.04)  # Tab bar, status bar
-        bg_active = lighten_color(bg, 0.12)  # Active tab, active line
+        bg_elevated = lighten_color(bg, 0.08)
+        bg_surface = lighten_color(bg, 0.04)
+        bg_active = lighten_color(bg, 0.12)
 
-        # Tonal variations for syntax highlighting
-        # Keywords family (accent-based tones)
         keyword_color = color1
         keyword_light = lighten_color(color1, 0.15)
         keyword_dim = darken_color(color1, 0.2)
 
-        # String family (color2-based tones)
         string_color = color2
         string_light = lighten_color(color2, 0.2)
         string_dim = darken_color(color2, 0.15)
 
-        # Function family (color3-based tones)
         function_color = color3
         function_light = lighten_color(color3, 0.15)
-        function_dim = darken_color(color3, 0.2)
 
-        # Type family (color4-based tones)
         type_color = color4
         type_light = lighten_color(color4, 0.15)
         type_dim = darken_color(color4, 0.2)
 
-        # Neutral tones for punctuation and operators
         punctuation_color = blend_colors(color8, label_color, 0.3)
         operator_color = blend_colors(label_color, color3, 0.25)
         bracket_color = blend_colors(color8, label_color, 0.5)
 
-        # Comment tones
         comment_color = color8
         comment_doc = lighten_color(color8, 0.15)
 
-        # Variable tones
         variable_color = label_color
         variable_special = blend_colors(label_color, color5, 0.3)
         parameter_color = blend_colors(label_color, color4, 0.2)
 
-        # Property and attribute tones
         property_color = blend_colors(label_color, color6, 0.4)
         attribute_color = blend_colors(color4, color6, 0.4)
 
@@ -467,32 +455,22 @@ def update_zed_theme():
         return False
 
 
-def update_vscode_settings():
+def update_gemini_theme():
     colors_file = Path.home() / ".cache" / "wal" / "colors.json"
-    settings_file = (
-        Path.home()
-        / "Library"
-        / "Application Support"
-        / "Code"
-        / "User"
-        / "settings.json"
-    )
+    settings_file = Path.home() / ".gemini" / "settings.json"
 
     if not colors_file.exists():
-        print("Pywal colors not found, skipping VSCode update")
+        print("Pywal colors not found, skipping Gemini CLI update")
         return False
 
-    if not settings_file.exists():
-        print("VSCode settings not found, skipping VSCode update")
+    if not settings_file.parent.exists():
+        print("Gemini CLI config directory not found, skipping Gemini CLI update")
         return False
 
-    print("Updating VSCode settings...")
+    print("Updating Gemini CLI theme...")
     try:
         with open(colors_file) as f:
             wal_colors = json.load(f)
-
-        with open(settings_file) as f:
-            vscode_settings = json.load(f)
 
         bg = wal_colors["special"]["background"]
         fg = wal_colors["special"]["foreground"]
@@ -502,61 +480,167 @@ def update_vscode_settings():
         color4 = wal_colors["colors"]["color4"]
         color5 = wal_colors["colors"]["color5"]
         color6 = wal_colors["colors"]["color6"]
-        color7 = wal_colors["colors"]["color7"]
         color8 = wal_colors["colors"]["color8"]
 
-        # Base semantic colors
+        accent_color = color1
+        bg_surface = lighten_color(bg, 0.04)
+
+        gemini_theme = {
+            "type": "custom",
+            "name": "Pywal",
+            "text": {
+                "primary": fg,
+                "secondary": color8,
+                "link": color4,
+                "accent": accent_color,
+            },
+            "background": {
+                "primary": bg,
+                "diff": {
+                    "added": darken_color(color2, 0.6),
+                    "removed": darken_color(color1, 0.6),
+                },
+            },
+            "border": {
+                "default": bg_surface,
+                "focused": accent_color,
+            },
+            "ui": {
+                "comment": color8,
+                "symbol": color4,
+                "gradient": [color1, color4, color6],
+            },
+            "status": {
+                "error": color1,
+                "success": color2,
+                "warning": color3,
+            },
+            "Background": bg,
+            "Foreground": fg,
+            "LightBlue": color4,
+            "AccentBlue": color4,
+            "AccentPurple": color5,
+            "AccentCyan": color6,
+            "AccentGreen": color2,
+            "AccentYellow": color3,
+            "AccentRed": color1,
+            "DiffAdded": darken_color(color2, 0.6),
+            "DiffRemoved": darken_color(color1, 0.6),
+            "Comment": color8,
+            "Gray": color8,
+            "DarkGray": darken_color(color8, 0.3),
+            "GradientColors": [color1, color4, color6],
+        }
+
+        gemini_settings: Dict[str, Any] = {}
+        if settings_file.exists():
+            with open(settings_file) as f:
+                loaded = json.load(f)
+                if isinstance(loaded, dict):
+                    gemini_settings = {str(k): v for k, v in loaded.items()}
+
+        if "ui" not in gemini_settings or not isinstance(gemini_settings["ui"], dict):
+            gemini_settings["ui"] = {}
+
+        ui_settings: Dict[str, Any] = gemini_settings["ui"]
+        if "customThemes" not in ui_settings or not isinstance(
+            ui_settings["customThemes"], dict
+        ):
+            ui_settings["customThemes"] = {}
+
+        custom_themes: Dict[str, Any] = ui_settings["customThemes"]
+        custom_themes["Pywal"] = gemini_theme
+        ui_settings["theme"] = "Pywal"
+
+        with open(settings_file, "w") as f:
+            json.dump(gemini_settings, f, indent=2)
+
+        print("Gemini CLI theme updated")
+        return True
+    except Exception as e:
+        print(f"Error updating Gemini CLI theme: {e}")
+        return False
+
+
+def update_vscode_settings(settings_file=None, app_name="VSCode"):
+    colors_file = Path.home() / ".cache" / "wal" / "colors.json"
+    if settings_file is None:
+        settings_file = (
+            Path.home()
+            / "Library"
+            / "Application Support"
+            / "Code"
+            / "User"
+            / "settings.json"
+        )
+
+    if not colors_file.exists():
+        print(f"Pywal colors not found, skipping {app_name} update")
+        return False
+
+    if not settings_file.exists():
+        print(f"{app_name} settings not found, skipping {app_name} update")
+        return False
+
+    print(f"Updating {app_name} settings...")
+    try:
+        with open(colors_file) as f:
+            wal_colors = json.load(f)
+
+        with open(settings_file) as f:
+            vscode_settings = json.load(f)
+
+        bg = wal_colors["special"]["background"]
+        color1 = wal_colors["colors"]["color1"]
+        color2 = wal_colors["colors"]["color2"]
+        color3 = wal_colors["colors"]["color3"]
+        color4 = wal_colors["colors"]["color4"]
+        color5 = wal_colors["colors"]["color5"]
+        color6 = wal_colors["colors"]["color6"]
+        color8 = wal_colors["colors"]["color8"]
+
         accent_color = color1
         icon_color = color4
         label_color = color6
-        selection_bg = lighten_color(bg, 0.25)
+        selection_bg = darken_color(color1, 0.7)
 
-        # Background variations for visual hierarchy (matching Zed)
-        bg_elevated = lighten_color(bg, 0.08)  # Panels, sidebars
-        bg_surface = lighten_color(bg, 0.04)  # Tab bar, status bar
-        bg_active = lighten_color(bg, 0.12)  # Active tab, active line
 
-        # Tonal variations for syntax highlighting
-        # Keywords family (accent-based tones)
+        bg = darken_color(bg, 0.88)
+        bg_elevated = darken_color(wal_colors["special"]["background"], 0.83)
+        bg_surface = darken_color(wal_colors["special"]["background"], 0.85)
+        bg_active = darken_color(wal_colors["special"]["background"], 0.75)
+
+        border_color = darken_color(color1, 0.75)
+
         keyword_color = color1
         keyword_light = lighten_color(color1, 0.15)
         keyword_dim = darken_color(color1, 0.2)
 
-        # String family (color2-based tones)
         string_color = color2
         string_light = lighten_color(color2, 0.2)
         string_dim = darken_color(color2, 0.15)
 
-        # Function family (color3-based tones)
         function_color = color3
         function_light = lighten_color(color3, 0.15)
-        function_dim = darken_color(color3, 0.2)
 
-        # Type family (color4-based tones)
         type_color = color4
         type_light = lighten_color(color4, 0.15)
-        type_dim = darken_color(color4, 0.2)
 
-        # Neutral tones for punctuation and operators
         punctuation_color = blend_colors(color8, label_color, 0.3)
         operator_color = blend_colors(label_color, color3, 0.25)
         bracket_color = blend_colors(color8, label_color, 0.5)
 
-        # Comment tones
         comment_color = color8
         comment_doc = lighten_color(color8, 0.15)
 
-        # Variable tones
         variable_color = label_color
         variable_special = blend_colors(label_color, color5, 0.3)
         parameter_color = blend_colors(label_color, color4, 0.2)
 
-        # Property and attribute tones
         property_color = blend_colors(label_color, color6, 0.4)
         attribute_color = blend_colors(color4, color6, 0.4)
 
         vscode_settings["workbench.colorCustomizations"] = {
-            # Editor - main editing area uses base bg
             "editor.background": bg,
             "editor.foreground": label_color,
             "editorCursor.foreground": accent_color,
@@ -570,64 +654,55 @@ def update_vscode_settings():
             "editor.lineHighlightBorder": bg_active,
             "editor.selectionBackground": selection_bg,
             "editor.inactiveSelectionBackground": bg_surface,
-            # Activity bar - leftmost bar, slightly elevated
-            "activityBar.background": bg_surface,
+            "activityBar.background": bg,
             "activityBar.foreground": icon_color,
             "activityBar.inactiveForeground": color8,
-            "activityBar.border": bg,
+            "activityBar.border": border_color,
             "activityBarBadge.background": accent_color,
             "activityBarBadge.foreground": bg,
-            # Sidebar - file explorer, elevated
             "sideBar.background": bg_elevated,
             "sideBar.foreground": label_color,
-            "sideBar.border": bg,
+            "sideBar.border": border_color,
             "sideBarSectionHeader.background": bg_elevated,
             "sideBarSectionHeader.foreground": label_color,
-            "sideBarSectionHeader.border": bg,
-            # Status bar - bottom bar, surface level
-            "statusBar.background": bg_surface,
+            "sideBarSectionHeader.border": border_color,
+            "statusBar.background": bg,
             "statusBar.foreground": label_color,
-            "statusBar.border": bg,
-            # Title bar
-            "titleBar.activeBackground": bg_surface,
+            "statusBar.border": border_color,
+            "titleBar.activeBackground": bg,
             "titleBar.activeForeground": label_color,
-            "titleBar.inactiveBackground": bg_surface,
+            "titleBar.inactiveBackground": bg,
             "titleBar.inactiveForeground": color8,
-            "titleBar.border": bg,
-            # Panel - bottom terminal/output area, elevated
+            "titleBar.border": border_color,
             "panel.background": bg_elevated,
-            "panel.border": bg,
+            "panel.border": border_color,
             "panelTitle.activeBorder": accent_color,
             "panelTitle.activeForeground": label_color,
             "panelTitle.inactiveForeground": color8,
-            # Editor widgets
             "editorHoverWidget.background": bg_elevated,
-            "editorHoverWidget.border": bg_surface,
+            "editorHoverWidget.border": border_color,
             "editorSuggestWidget.background": bg_elevated,
-            "editorSuggestWidget.border": bg_surface,
+            "editorSuggestWidget.border": border_color,
             "editorSuggestWidget.selectedBackground": selection_bg,
             "scrollbarSlider.background": f"{selection_bg}80",
             "scrollbarSlider.hoverBackground": f"{selection_bg}cc",
             "scrollbarSlider.activeBackground": f"{selection_bg}cc",
             "focusBorder": accent_color,
-            # Tabs - tab bar uses surface, active tab uses main bg to match editor
             "tab.activeBackground": bg,
             "tab.activeForeground": label_color,
             "tab.inactiveBackground": bg_surface,
             "tab.inactiveForeground": color8,
             "tab.activeBorder": accent_color,
             "tab.activeBorderTop": accent_color,
-            "tab.border": bg_surface,
+            "tab.border": border_color,
             "tab.hoverBackground": bg_elevated,
             "tab.hoverForeground": label_color,
             "editorGroupHeader.tabsBackground": bg_surface,
-            "editorGroupHeader.tabsBorder": bg,
-            # Breadcrumb
+            "editorGroupHeader.tabsBorder": border_color,
             "breadcrumb.background": bg_surface,
             "breadcrumb.foreground": color8,
             "breadcrumb.focusForeground": label_color,
             "breadcrumb.activeSelectionForeground": accent_color,
-            # Lists (file explorer, etc.)
             "list.activeSelectionBackground": selection_bg,
             "list.activeSelectionForeground": label_color,
             "list.inactiveSelectionBackground": bg_surface,
@@ -637,54 +712,47 @@ def update_vscode_settings():
             "list.focusBackground": selection_bg,
             "list.focusForeground": label_color,
             "list.highlightForeground": accent_color,
-            # Buttons
             "button.background": accent_color,
             "button.foreground": bg,
             "button.hoverBackground": color3,
             "button.secondaryBackground": bg_surface,
             "button.secondaryForeground": label_color,
             "button.secondaryHoverBackground": bg_elevated,
-            # Inputs
             "input.background": bg,
             "input.foreground": label_color,
-            "input.border": bg_surface,
+            "input.border": border_color,
             "input.placeholderForeground": color8,
             "inputOption.activeBackground": accent_color,
             "inputOption.activeForeground": bg,
-            # Dropdowns
             "dropdown.background": bg_elevated,
             "dropdown.foreground": label_color,
-            "dropdown.border": bg_surface,
-            # Notifications
+            "dropdown.border": border_color,
             "notifications.background": bg_elevated,
             "notifications.foreground": label_color,
-            "notifications.border": bg_surface,
-            "notificationCenter.border": bg_surface,
+            "notifications.border": border_color,
+            "notificationCenter.border": border_color,
             "notificationCenterHeader.background": bg_elevated,
             "notificationCenterHeader.foreground": label_color,
-            "notificationToast.border": bg_surface,
+            "notificationToast.border": border_color,
             "notificationsErrorIcon.foreground": accent_color,
             "notificationsWarningIcon.foreground": color3,
             "notificationsInfoIcon.foreground": icon_color,
-            # Quick input (command palette)
             "quickInput.background": bg_elevated,
             "quickInput.foreground": label_color,
             "quickInputList.focusBackground": selection_bg,
             "quickInputList.focusForeground": label_color,
             "quickInputTitle.background": bg_elevated,
-            # Misc
             "badge.background": accent_color,
             "badge.foreground": bg,
             "progressBar.background": accent_color,
             "editorWidget.background": bg_elevated,
-            "editorWidget.border": bg_surface,
+            "editorWidget.border": border_color,
             "editorWidget.foreground": label_color,
             "widget.shadow": f"{bg}80",
             "settings.headerForeground": label_color,
             "settings.modifiedItemIndicator": accent_color,
             "welcomePage.background": bg,
             "walkThrough.embeddedEditorBackground": bg_elevated,
-            # Terminal
             "terminal.background": bg,
             "terminal.foreground": label_color,
             "terminal.ansiBlack": bg,
@@ -716,17 +784,14 @@ def update_vscode_settings():
             "types": {"foreground": type_color, "fontStyle": "bold"},
             "numbers": {"foreground": keyword_dim},
             "textMateRules": [
-                # Storage keywords (let, const, var, function, class, etc.)
                 {
                     "scope": ["storage.type", "storage.modifier"],
                     "settings": {"foreground": keyword_color, "fontStyle": "bold"},
                 },
-                # Type names and classes
                 {
                     "scope": ["entity.name.type", "entity.name.class"],
                     "settings": {"foreground": type_color, "fontStyle": "bold"},
                 },
-                # Interfaces and type parameters - lighter type tone
                 {
                     "scope": [
                         "entity.name.type.interface",
@@ -734,42 +799,34 @@ def update_vscode_settings():
                     ],
                     "settings": {"foreground": type_light, "fontStyle": "bold"},
                 },
-                # Enums - lighter type tone
                 {
                     "scope": "entity.name.type.enum",
                     "settings": {"foreground": type_light, "fontStyle": "bold"},
                 },
-                # Functions and methods
                 {
                     "scope": ["entity.name.function", "support.function"],
                     "settings": {"foreground": function_color, "fontStyle": "bold"},
                 },
-                # Method calls - lighter function tone
                 {
                     "scope": "entity.name.function.member",
                     "settings": {"foreground": function_light, "fontStyle": "bold"},
                 },
-                # Constructors - lighter function tone
                 {
                     "scope": "entity.name.function.constructor",
                     "settings": {"foreground": function_light, "fontStyle": "bold"},
                 },
-                # Parameters - italic with parameter color
                 {
                     "scope": "variable.parameter",
                     "settings": {"foreground": parameter_color, "fontStyle": "italic"},
                 },
-                # Language constants (true, false, null, etc.) - lighter keyword
                 {
                     "scope": "constant.language",
                     "settings": {"foreground": keyword_light, "fontStyle": "bold"},
                 },
-                # Numeric constants - dim keyword
                 {
                     "scope": "constant.numeric",
                     "settings": {"foreground": keyword_dim},
                 },
-                # Object properties
                 {
                     "scope": [
                         "variable.other.property",
@@ -777,37 +834,30 @@ def update_vscode_settings():
                     ],
                     "settings": {"foreground": property_color},
                 },
-                # Special variables (this, self, super)
                 {
                     "scope": ["variable.language", "variable.language.this"],
                     "settings": {"foreground": variable_special, "fontStyle": "italic"},
                 },
-                # String punctuation - dim string
                 {
                     "scope": "punctuation.definition.string",
                     "settings": {"foreground": string_dim},
                 },
-                # Escape sequences in strings
                 {
                     "scope": "constant.character.escape",
                     "settings": {"foreground": string_dim},
                 },
-                # Regex - lighter string
                 {
                     "scope": "string.regexp",
                     "settings": {"foreground": string_light},
                 },
-                # Template literals
                 {
                     "scope": "string.template",
                     "settings": {"foreground": string_color},
                 },
-                # Template expression punctuation
                 {
                     "scope": "punctuation.definition.template-expression",
                     "settings": {"foreground": keyword_dim},
                 },
-                # General punctuation
                 {
                     "scope": [
                         "punctuation.definition.variable",
@@ -816,22 +866,18 @@ def update_vscode_settings():
                     ],
                     "settings": {"foreground": punctuation_color},
                 },
-                # Separators (commas, semicolons)
                 {
                     "scope": ["punctuation.separator", "punctuation.terminator"],
                     "settings": {"foreground": punctuation_color},
                 },
-                # Brackets and braces
                 {
                     "scope": ["meta.brace", "punctuation.definition.block"],
                     "settings": {"foreground": bracket_color},
                 },
-                # Operators
                 {
                     "scope": "keyword.operator",
                     "settings": {"foreground": operator_color},
                 },
-                # Comparison and assignment operators
                 {
                     "scope": [
                         "keyword.operator.comparison",
@@ -839,32 +885,26 @@ def update_vscode_settings():
                     ],
                     "settings": {"foreground": operator_color},
                 },
-                # Attributes (decorators, annotations)
                 {
                     "scope": ["entity.name.function.decorator", "meta.decorator"],
                     "settings": {"foreground": attribute_color},
                 },
-                # Tags (HTML, JSX)
                 {
                     "scope": "entity.name.tag",
                     "settings": {"foreground": type_color},
                 },
-                # Tag attributes
                 {
                     "scope": "entity.other.attribute-name",
                     "settings": {"foreground": attribute_color},
                 },
-                # Doc comments - slightly lighter
                 {
                     "scope": ["comment.block.documentation", "comment.block.javadoc"],
                     "settings": {"foreground": comment_doc, "fontStyle": "italic"},
                 },
-                # Import/export keywords
                 {
                     "scope": ["keyword.control.import", "keyword.control.export"],
                     "settings": {"foreground": keyword_dim},
                 },
-                # Module names in imports
                 {
                     "scope": "entity.name.type.module",
                     "settings": {"foreground": string_color},
@@ -875,11 +915,23 @@ def update_vscode_settings():
         with open(settings_file, "w") as f:
             json.dump(vscode_settings, f, indent=4)
 
-        print("VSCode settings updated")
+        print(f"{app_name} settings updated")
         return True
     except Exception as e:
-        print(f"Error updating VSCode settings: {e}")
+        print(f"Error updating {app_name} settings: {e}")
         return False
+
+
+def update_antigravity_settings():
+    settings_file = (
+        Path.home()
+        / "Library"
+        / "Application Support"
+        / "Antigravity"
+        / "User"
+        / "settings.json"
+    )
+    return update_vscode_settings(settings_file=settings_file, app_name="Antigravity")
 
 
 def main():
@@ -892,11 +944,13 @@ def main():
 
     zed_ok = update_zed_theme()
     vscode_ok = update_vscode_settings()
+    antigravity_ok = update_antigravity_settings()
+    gemini_ok = update_gemini_theme()
     borders_ok = reload_borders()
     sketchybar_ok = reload_sketchybar()
 
     print("")
-    if zed_ok or vscode_ok or borders_ok or sketchybar_ok:
+    if zed_ok or vscode_ok or antigravity_ok or gemini_ok or borders_ok or sketchybar_ok:
         print("Theme reloaded")
     else:
         print("Theme reload completed with errors")

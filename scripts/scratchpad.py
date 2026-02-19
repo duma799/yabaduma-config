@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Scratchpad terminal toggle for yabai + skhd."""
 
 import subprocess
 import json

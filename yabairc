@@ -43,8 +43,6 @@ yabai -m rule --add title="^scratchpad$" manage=off sticky=on grid=10:10:1:1:8:7
 yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
 
 
-
-# Force horizontal split for 3rd+ window: toggle any new window that got vertical split
 yabai -m signal --add event=window_created action='
   sleep 0.1
   split=$(yabai -m query --windows --window $YABAI_WINDOW_ID 2>/dev/null | jq -r ".\"split-type\"")
@@ -56,7 +54,6 @@ yabai -m signal --add event=window_created action='
   fi
 '
 
-# Toggle spaces 6-7 visibility based on display count
 yabai -m signal --add event=display_added action='
   sketchybar --set space.6 drawing=on --set space.7 drawing=on
 '
