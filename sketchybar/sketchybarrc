@@ -8,6 +8,7 @@ sketchybar --bar position=top height=34 blur_radius=0 color=0x00000000 \
                  corner_radius=0 \
                  border_width=0 \
                  margin=0 \
+                 notch_width=200 \
                  y_offset=5 \
                  padding_left=10 \
                  padding_right=10
@@ -87,23 +88,51 @@ sketchybar --add bracket spaces_bracket "${SPACE_IDS[@]}" \
                                 background.height=28 \
                                 background.border_width=0
 
+sketchybar --add item front_app left \
+           --set front_app script="$PLUGIN_DIR/front_app.py" \
+                           icon.drawing=off \
+                           label.color="$LABEL_COLOR" \
+                           label.font="Hack Nerd Font:Bold:13.0" \
+                           padding_left=8 padding_right=8 \
+           --subscribe front_app front_app_switched \
+           \
+           --add bracket front_app_bracket front_app \
+           --set front_app_bracket background.color="$ITEM_BG_COLOR" \
+                                   background.corner_radius=16 \
+                                   background.height=28 \
+                                   background.border_width=0
+
 
 sketchybar --add item clock right \
-           --set clock update_freq=10 icon="" padding_left=-5 padding_right=10 script="$PLUGIN_DIR/clock.py" \
+           --set clock update_freq=10 icon="" padding_left=-5 padding_right=10 \
+                        label.color="$ACCENT_COLOR" \
+                        script="$PLUGIN_DIR/clock.py" \
            --add item volume right \
            --set volume script="$PLUGIN_DIR/volume.py" \
+                        padding_left=0 padding_right=0 \
+                        icon.padding_left=1 icon.padding_right=4 \
+                        label.padding_left=4 label.padding_right=4 \
+                        label.color="$ACCENT_COLOR" \
            --subscribe volume volume_change \
            --add item wifi right \
-           --set wifi update_freq=5 script="$PLUGIN_DIR/wifi.py" padding_right=-15 \
+           --set wifi update_freq=5 script="$PLUGIN_DIR/wifi.py" \
+                      padding_left=0 padding_right=0 \
+                      icon.padding_left=3 icon.padding_right=1 \
+                      label.padding_left=4 label.padding_right=0 \
+                      label.color="$ACCENT_COLOR" \
            --subscribe wifi wifi_change \
            --add item bluetooth right \
            --set bluetooth update_freq=5 script="$PLUGIN_DIR/bluetooth.py" \
-                           padding_left=1 padding_right=1 \
-                           icon.padding_left=0 icon.padding_right=0 \
-                           label.padding_left=0 label.padding_right=0 \
+                           padding_left=0 padding_right=0 \
+                           icon.padding_left=4 icon.padding_right=2 \
+                           label.padding_left=1 label.padding_right=4 \
+                           label.color="$ACCENT_COLOR" \
            --add item battery right \
            --set battery update_freq=120 script="$PLUGIN_DIR/battery.py" \
-                           icon.padding_left=8 padding_right=5 \
+                           padding_left=8 padding_right=0 \
+                           icon.padding_left=4 icon.padding_right=4 \
+                           label.padding_left=4 label.padding_right=4 \
+                           label.color="$ACCENT_COLOR" \
            --subscribe battery system_woke power_source_change \
            \
            --add bracket right_bracket clock volume wifi bluetooth battery \
@@ -111,5 +140,25 @@ sketchybar --add item clock right \
                                background.corner_radius=16 \
                                background.height=28 \
                                background.border_width=0
+
+sketchybar --add item weather right \
+           --set weather update_freq=600 script="$PLUGIN_DIR/weather.py" \
+                         icon.color="$ICON_COLOR" \
+                         label.color="$LABEL_COLOR" \
+                         label.font="Hack Nerd Font:Regular:12.0" \
+                         padding_left=8 padding_right=4 \
+                         click_script="open -a Weather" \
+           --add item notifications right \
+           --set notifications script="$PLUGIN_DIR/notifications.py" \
+                               icon.color="$ICON_COLOR" \
+                               label.drawing=off \
+                               padding_left=4 padding_right=8 \
+                               click_script="osascript -e 'tell application \"System Events\" to key code 36 using {option down, command down}' || open -a 'Notification Center'" \
+           \
+           --add bracket notch_right_bracket weather notifications \
+           --set notch_right_bracket background.color="$ITEM_BG_COLOR" \
+                                     background.corner_radius=16 \
+                                     background.height=28 \
+                                     background.border_width=0
 
 sketchybar --update
