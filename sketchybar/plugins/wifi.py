@@ -19,7 +19,7 @@ def get_wifi_power() -> bool:
     return "On" in result.stdout
 
 
-def get_ssid() -> str | None:
+def get_ssid() -> "str | None":
     result = subprocess.run(
         ["ipconfig", "getsummary", WIFI_INTERFACE],
         capture_output=True,
