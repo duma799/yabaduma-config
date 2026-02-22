@@ -6,8 +6,8 @@ from pathlib import Path
 COLORS_FILE = Path.home() / ".cache" / "wal" / "colors.json"
 
 DEFAULTS = {
-    "BAR_COLOR": "0x00000000",
-    "ITEM_BG_COLOR": "0xf01e3a5f",
+    "BAR_COLOR": "0xff000000",
+    "ITEM_BG_COLOR": "0x00000000",
     "ACCENT_COLOR": "0xff5f87af",
     "ICON_COLOR": "0xffDFE5F3",
     "LABEL_COLOR": "0xffDFE5F3",
@@ -50,7 +50,7 @@ def get_colors() -> dict[str, str]:
 
         return {
             "BAR_COLOR": hex_to_argb(bg),
-            "ITEM_BG_COLOR": hex_to_argb(bg),
+            "ITEM_BG_COLOR": "0x00000000",
             "ACCENT_COLOR": hex_to_argb(color1),
             "ICON_COLOR": hex_to_argb(color4),
             "LABEL_COLOR": hex_to_argb(color6),
