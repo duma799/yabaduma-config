@@ -131,6 +131,17 @@ active_color2=$(echo "$color4" | sed 's/#/0xff/')
 
 **Bluetooth shows N/A:** Install blueutil - `brew install blueutil`
 
+**Autofocus not working (focus doesn't follow mouse):** The `autofocus` mode requires the yabai scripting addition, which needs passwordless sudo. Create a sudoers entry:
+```bash
+# Get the hash of your yabai binary
+YABAI_HASH=$(shasum -a 256 $(which yabai) | awk '{print $1}')
+echo "$(whoami) ALL=(root) NOPASSWD: sha256:${YABAI_HASH} $(which yabai) --load-sa"
+
+# Add it to sudoers (copy the output of the command above)
+sudo visudo -f /private/etc/sudoers.d/yabai
+```
+Without this, `sudo yabai --load-sa` fails silently on launch and autofocus falls back to disabled. You'll need to update the hash after each `brew upgrade yabai`.
+
 **Services acting up:** Restart everything:
 ```bash
 brew services restart yabai skhd borders sketchybar
