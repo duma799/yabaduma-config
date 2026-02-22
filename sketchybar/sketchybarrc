@@ -4,12 +4,13 @@ PLUGIN_DIR="$CONFIG_DIR/plugins"
 eval "$("$CONFIG_DIR/colors.py")"
 
 
-sketchybar --bar position=top height=34 blur_radius=0 color=0x00000000 \
+sketchybar --bar position=top height=37 blur_radius=0 color="$BAR_COLOR" \
                  corner_radius=0 \
                  border_width=0 \
                  margin=0 \
                  notch_width=200 \
-                 y_offset=5 \
+                 notch_offset=0 \
+                 y_offset=0 \
                  padding_left=10 \
                  padding_right=10
 
@@ -40,9 +41,7 @@ do
       icon="${SPACE_ICONS[i]}"
       icon.padding_left=8
       icon.padding_right=2
-      background.color=0x00000000
-      background.corner_radius=0
-      background.height=25
+      background.drawing=off
       label.drawing=off
       script="$PLUGIN_DIR/space.py"
       click_script="yabai -m space --focus $sid"
@@ -53,9 +52,7 @@ do
       icon="${SPACE_ICONS[i]}"
       icon.padding_left=2
       icon.padding_right=8
-      background.color=0x00000000
-      background.corner_radius=0
-      background.height=25
+      background.drawing=off
       label.drawing=off
       script="$PLUGIN_DIR/space.py"
       click_script="yabai -m space --focus $sid"
@@ -66,9 +63,7 @@ do
       icon="${SPACE_ICONS[i]}"
       icon.padding_left=2
       icon.padding_right=2
-      background.color=0x00000000
-      background.corner_radius=0
-      background.height=25
+      background.drawing=off
       label.drawing=off
       script="$PLUGIN_DIR/space.py"
       click_script="yabai -m space --focus $sid"
@@ -83,8 +78,8 @@ if [ "$(yabai -m query --displays | jq length)" -eq 1 ]; then
 fi
 
 sketchybar --add bracket spaces_bracket "${SPACE_IDS[@]}" \
-           --set spaces_bracket background.color="$ITEM_BG_COLOR" \
-                                background.corner_radius=16 \
+           --set spaces_bracket background.color=0x00000000 \
+                                background.corner_radius=0 \
                                 background.height=28 \
                                 background.border_width=0
 
@@ -97,8 +92,8 @@ sketchybar --add item front_app left \
            --subscribe front_app front_app_switched \
            \
            --add bracket front_app_bracket front_app \
-           --set front_app_bracket background.color="$ITEM_BG_COLOR" \
-                                   background.corner_radius=16 \
+           --set front_app_bracket background.color=0x00000000 \
+                                   background.corner_radius=0 \
                                    background.height=28 \
                                    background.border_width=0
 
@@ -136,8 +131,8 @@ sketchybar --add item clock right \
            --subscribe battery system_woke power_source_change \
            \
            --add bracket right_bracket clock volume wifi bluetooth battery \
-           --set right_bracket background.color="$ITEM_BG_COLOR" \
-                               background.corner_radius=16 \
+           --set right_bracket background.color=0x00000000 \
+                               background.corner_radius=0 \
                                background.height=28 \
                                background.border_width=0
 
@@ -156,8 +151,8 @@ sketchybar --add item weather right \
                                click_script="osascript -e 'tell application \"System Events\" to key code 36 using {option down, command down}' || open -a 'Notification Center'" \
            \
            --add bracket notch_right_bracket weather notifications \
-           --set notch_right_bracket background.color="$ITEM_BG_COLOR" \
-                                     background.corner_radius=16 \
+           --set notch_right_bracket background.color=0x00000000 \
+                                     background.corner_radius=0 \
                                      background.height=28 \
                                      background.border_width=0
 
