@@ -16,6 +16,14 @@ yabai -m config window_gap     10
 yabai -m config --space 5 top_padding 10
 yabai -m config --space 5 bottom_padding 24
 
+PADDING_SCRIPT="$(dirname "$(readlink "$HOME/.yabairc" 2>/dev/null || echo "$0")")/adjust_padding.py"
+
+python3 "$PADDING_SCRIPT"
+
+yabai -m signal --add event=display_added action="sleep 2; python3 $PADDING_SCRIPT"
+yabai -m signal --add event=display_removed action="sleep 2; python3 $PADDING_SCRIPT"
+yabai -m signal --add event=display_changed action="python3 $PADDING_SCRIPT"
+
 yabai -m config window_placement first_child
 
 yabai -m config window_opacity on
