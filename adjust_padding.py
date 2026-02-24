@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
-import subprocess, json, ctypes, ctypes.util
+import subprocess, json
 
-cg = ctypes.cdll.LoadLibrary(ctypes.util.find_library("CoreGraphics"))
-cg.CGDisplayIsBuiltin.argtypes = [ctypes.c_uint32]
-cg.CGDisplayIsBuiltin.restype = ctypes.c_int32
+def get_top_padding(display):
+    w = display["frame"]["w"]
+    h = display["frame"]["h"]
+
+    aspect_ratio = w / h if h > 0 else 1.0
+    is_external = aspect_ratio > 1.65 or h in [1080, 1440, 2160, 2880]
+
+    if is_external:
+        return "14"
+    else:
+        return "4"
 
 displays = json.loads(subprocess.check_output(["yabai", "-m", "query", "--displays"]))
-display_map = {d["index"]: d["id"] for d in displays}
-
 spaces = json.loads(subprocess.check_output(["yabai", "-m", "query", "--spaces"]))
+
 for space in spaces:
-    display_id = display_map.get(space["display"], 0)
-    is_builtin = cg.CGDisplayIsBuiltin(display_id) != 0
-    top_padding = "10" if is_builtin else "47"
-    subprocess.run(["yabai", "-m", "config", "--space", str(space["index"]), "top_padding", top_padding])
+    disp = next((d for d in displays if d["index"] == space["display"]), None)
+    if disp:
+        pad = get_top_padding(disp)
+        subprocess.run(["yabai", "-m", "config", "--space", str(space["index"]), "top_padding", pad])
