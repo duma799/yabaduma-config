@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-alt - q : open -na "ghostty"
+alt - q : ~/.local/bin/new-ghostty
 cmd - b : open -a "Zen"
 alt - c : open -na "Visual Studio Code"
 alt - s : open -a "Spotify"
